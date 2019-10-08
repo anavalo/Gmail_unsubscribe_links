@@ -6,7 +6,6 @@ def get_unsub_links(txt_file):
     text = open(txt_file).read()
     pp = pprint.PrettyPrinter(indent=4)
     urls = re.findall(r'(https?://\S+)',text)
-    # urls = re.findall('<a.*?href.*?>[\S]*?[uU]nsubscribe.*[\S]</a>',text)
     duplicates = {}
     print('Got ' + str(len(urls)) + ' URLs.')
     for url in urls:

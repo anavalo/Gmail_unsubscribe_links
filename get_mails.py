@@ -16,15 +16,19 @@ def main():
 
     def getMimeMessage(service, user_id, msg_id):
         try:
-            message = service.users().messages().get(userId=user_id, id=msg_id,
-                                                     format='raw').execute()
-            msg_bytes = base64.urlsafe_b64decode(message['raw'].encode('ascii'))
-            msg_str = msg_bytes.decode('Latin-1')
-            mime = email.message_from_string(msg_str)
-            return msg_str    #or MIME if you use getMimeBOdy
+            message = service.users().messages().get(userId=user_id, id=msg_id, format='raw').execute()
+            msg_bytes = base64.urlsafe_b64decode(message['raw'].encode('ASCII'))
+            mime_msg = email.message_from_bytes(msg_bytes)
+            messageMainType = mime_msg.get_content_maintype()
+            if messageMainType == 'multipart':
+                for part in mime_msg.get_payload():
+                    if part.get_content_maintype() == 'text':
+                        return part.get_payload()
+                return ""
+            elif messageMainType == 'text':
+                return mime_msg.get_payload()
         except errors.HttpError as error:
-            print(f'An error occurred: {error}')
-            return None
+            print('An error occurred: %s' % error)
 
     # function to get body from MIME (at least try to)
     def getMimeBody(mime):
