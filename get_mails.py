@@ -30,23 +30,6 @@ def main():
         except errors.HttpError as error:
             print('An error occurred: %s' % error)
 
-    # function to get body from MIME (at least try to)
-    def getMimeBody(mime):
-        body = ''
-        if mime.is_multipart():
-            for part in mime.walk():
-                ctype = part.get_content_type()
-                cdispo = str(part.get('Content-Disposition'))
-                if ctype == 'text/plain' and 'attachment' not in cdispo:
-                    body = part.get_payload(decode=True)
-                    body = body.decode('Latin-1')
-                    break
-        else:
-            body = mime.get_payload(decode=True)
-            body = body.decode('Latin-1')
-        return body
-
-
     creds = None
 
     if os.path.exists('token.pickle'):
@@ -65,7 +48,6 @@ def main():
             pickle.dump(creds, token)
 
 
-
     service = build('gmail', 'v1', credentials=creds)
 
     msg_list_params = {
@@ -78,7 +60,7 @@ def main():
         while messages_request is not None:
             gmail_msg_list = messages_request.execute()
             for gmail_msg in gmail_msg_list['messages']:
-                f.write(getMimeMessage(service, 'me', gmail_msg['id'])) #or call getMimeBody(getMimeMessage))
+                f.write(getMimeMessage(service, 'me', gmail_msg['id']))
 
 
 

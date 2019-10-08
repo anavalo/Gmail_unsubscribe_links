@@ -16,7 +16,6 @@ def get_unsub_links(txt_file):
             print(k)
 
 
-
 def main():
     file = 'mail.txt'
     get_unsub_links(file)
